@@ -1,0 +1,39 @@
+<Window x:Class="NetProfileManager.App.ProfileEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Profil réseau"
+        Width="430" Height="430"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Nom du profil" Margin="0,0,0,4"/>
+            <TextBox x:Name="NameBox" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Adresse IP" Margin="0,0,0,4"/>
+            <TextBox x:Name="IpBox" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Masque de sous-réseau" Margin="0,0,0,4"/>
+            <TextBox x:Name="MaskBox" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Passerelle (laisser vide si aucune)" Margin="0,0,0,4"/>
+            <TextBox x:Name="GatewayBox" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Serveurs DNS (séparés par des virgules)" Margin="0,0,0,4"/>
+            <TextBox x:Name="DnsBox" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Description (facultative)" Margin="0,0,0,4"/>
+            <TextBox x:Name="DescriptionBox" Margin="0,0,0,10"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Annuler" Click="Cancel_Click" Padding="14,5" Margin="0,0,8,0"/>
+            <Button Content="Enregistrer" Click="Save_Click" Padding="14,5" IsDefault="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
