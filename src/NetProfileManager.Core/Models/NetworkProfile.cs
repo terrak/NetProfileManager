@@ -9,4 +9,6 @@ public class NetworkProfile
     public string? Gateway { get; set; }
     public List<string> DnsServers { get; set; } = new();
     public string? Description { get; set; }
+
+    public string Summary => $"{IpAddress}/{SubnetMask} | GW {Gateway ?? "-"} | DNS {string.Join(", ", DnsServers)}";
 }
