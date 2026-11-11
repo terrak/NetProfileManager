@@ -1,0 +1,74 @@
+<Window x:Class="NetProfileManager.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Gestionnaire de profils réseau"
+        Width="1024" Height="600"
+        WindowStartupLocation="CenterScreen"
+        Loaded="MainWindow_Loaded">
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="330"/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel Grid.Column="0" Margin="0,0,12,0">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                <Button Content="Rafraîchir" Click="Refresh_Click" Padding="14,5" Margin="0,0,10,0"/>
+                <TextBlock x:Name="StatusText" VerticalAlignment="Center" Foreground="#555" TextWrapping="Wrap"/>
+            </StackPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="AdaptersList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="230"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock FontWeight="Bold" FontSize="14" Text="{Binding DisplayName}"/>
+                                        <TextBlock Foreground="Gray" Text="{Binding StatusText}"/>
+                                        <TextBlock Foreground="#555" TextWrapping="Wrap" Text="{Binding ConfigText}"/>
+                                        <TextBlock Foreground="#0067C0" FontWeight="SemiBold" Text="{Binding ActiveProfileText}"/>
+                                    </StackPanel>
+                                    <ComboBox Grid.Column="1"
+                                              Margin="10,0"
+                                              VerticalAlignment="Center"
+                                              ItemsSource="{Binding AvailableChoices}"
+                                              SelectedItem="{Binding SelectedChoice}"
+                                              DisplayMemberPath="DisplayName"/>
+                                    <Button Grid.Column="2"
+                                            Content="Appliquer"
+                                            Padding="14,5"
+                                            VerticalAlignment="Center"
+                                            Click="Apply_Click"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+
+        <DockPanel Grid.Column="1">
+            <TextBlock DockPanel.Dock="Top" Text="Profils enregistrés" FontWeight="Bold" FontSize="14" Margin="0,0,0,8"/>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,10,0,0">
+                <Button Content="Ajouter" Click="AddProfile_Click" Padding="10,5" Margin="0,0,6,0"/>
+                <Button Content="Modifier" Click="EditProfile_Click" Padding="10,5" Margin="0,0,6,0"/>
+                <Button Content="Supprimer" Click="DeleteProfile_Click" Padding="10,5"/>
+            </StackPanel>
+            <ListBox x:Name="ProfilesList">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,2">
+                            <TextBlock FontWeight="SemiBold" Text="{Binding Name}"/>
+                            <TextBlock Foreground="Gray" FontSize="11" TextWrapping="Wrap" Text="{Binding Summary}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Grid>
+</Window>
