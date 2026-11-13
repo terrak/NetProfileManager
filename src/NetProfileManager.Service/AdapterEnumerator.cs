@@ -28,7 +28,7 @@ public static class AdapterEnumerator
                     .Select(u => u.Address.ToString())
                     .ToList(),
                 CurrentGateway = properties.GatewayAddresses
-                    .Where(g => g.AddressFamily == AddressFamily.InterNetwork)
+                    .Where(g => g.Address.AddressFamily == AddressFamily.InterNetwork)
                     .Select(g => g.Address.ToString())
                     .FirstOrDefault(),
                 CurrentDns = properties.DnsAddresses

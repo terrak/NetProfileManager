@@ -35,7 +35,7 @@ public class PipeServer
             NamedPipeServerStream pipe;
             try
             {
-                pipe = new NamedPipeServerStream(
+                pipe = NamedPipeServerStreamAcl.Create(
                     PipeNames.PipeName,
                     PipeDirection.InOut,
                     NamedPipeServerStream.MaxAllowedServerInstances,
