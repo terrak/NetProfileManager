@@ -4,6 +4,23 @@ Application Windows 11 (.NET 8, C#) pour mémoriser des **profils réseau** (IP,
 passerelle, DNS) et les appliquer à une carte réseau, ou remettre une ou plusieurs
 cartes en **DHCP complet** (IP + passerelle + DNS automatiques).
 
+## Téléchargement
+
+**Version 1.0.0** — Windows 64 bits (.NET 8, autonome) :
+
+[NetProfileManager-v1.0.0-win-x64.zip](https://github.com/terrak/NetProfileManager/raw/v1.0.0/releases/v1.0.0/NetProfileManager-v1.0.0-win-x64.zip) (~1 Mo)
+
+Le zip contient les trois programmes compilés (`NetProfileManager.exe`, `NetProfileManager.Cli.exe`,
+`NetProfileManager.Service.exe`) ainsi que les scripts d'installation. Après extraction, installer
+le service **une seule fois avec un compte administrateur** :
+
+```powershell
+.\NetProfileManager-v1.0.0\installer\Install-Service.ps1 -PublishDir "C:\chemin\extrait\NetProfileManager-v1.0.0\NetProfileManager"
+```
+
+Ensuite, lancer `NetProfileManager.exe` (interface graphique) ou `NetProfileManager.Cli.exe` (console)
+**sans aucun droit administrateur**.
+
 ## Règles métier
 
 - Un **profil statique ne peut être actif que sur une seule carte réseau** à la fois.
