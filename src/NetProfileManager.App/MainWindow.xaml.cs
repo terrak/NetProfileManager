@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using NetProfileManager.Core.Models;
 using NetProfileManager.Core.Protocol;
+using NetProfileManager.Core.Services;
 
 namespace NetProfileManager.App;
 
@@ -68,12 +69,15 @@ public class AdapterRow : INotifyPropertyChanged
 public partial class MainWindow : Window
 {
     private readonly ObservableCollection<AdapterRow> _adapterRows = new();
+    private readonly ObservableCollection<AdapterRow> _hiddenRows = new();
+    private readonly UiSettings _uiSettings = UiSettingsStore.Load();
     private List<NetworkProfile> _profiles = new();
 
     public MainWindow()
     {
         InitializeComponent();
         AdaptersList.ItemsSource = _adapterRows;
+        HiddenAdaptersList.ItemsSource = _hiddenRows;
     }
 
     private async void MainWindow_Loaded(object sender, RoutedEventArgs e) => await RefreshAsync();
@@ -103,6 +107,7 @@ public partial class MainWindow : Window
         var adapters = PipeClient.DeserializeData<List<AdapterInfo>>(adaptersResponse) ?? new List<AdapterInfo>();
 
         _adapterRows.Clear();
+        _hiddenRows.Clear();
         foreach (var adapter in adapters)
         {
             var row = new AdapterRow { Adapter = adapter, Profiles = _profiles };
@@ -121,9 +126,42 @@ public partial class MainWindow : Window
             {
                 row.SelectedChoice = row.AvailableChoices.FirstOrDefault(c => c.Id == adapter.ActiveProfileId);
             }
-            _adapterRows.Add(row);
+
+            if (_uiSettings.HiddenAdapters.Contains(adapter.InterfaceAlias))
+            {
+                _hiddenRows.Add(row);
+            }
+            else
+            {
+                _adapterRows.Add(row);
+            }
         }
-        SetStatus($"{adapters.Count} carte(s) réseau détectée(s), {_profiles.Count} profil(s) enregistré(s).");
+        HiddenExpander.Header = $"Cartes masquées ({_hiddenRows.Count})";
+        SetStatus($"{_adapterRows.Count} carte(s) affichée(s), {_hiddenRows.Count} masquée(s), {_profiles.Count} profil(s) enregistré(s).");
+    }
+
+    private async void Hide_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || button.DataContext is not AdapterRow row)
+        {
+            return;
+        }
+
+        _uiSettings.HiddenAdapters.Add(row.InterfaceAlias);
+        UiSettingsStore.Save(_uiSettings);
+        await RefreshAsync();
+    }
+
+    private async void Unhide_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button || button.DataContext is not AdapterRow row)
+        {
+            return;
+        }
+
+        _uiSettings.HiddenAdapters.Remove(row.InterfaceAlias);
+        UiSettingsStore.Save(_uiSettings);
+        await RefreshAsync();
     }
 
     private async void Apply_Click(object sender, RoutedEventArgs e)

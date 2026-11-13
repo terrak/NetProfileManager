@@ -39,17 +39,50 @@
                                               ItemsSource="{Binding AvailableChoices}"
                                               SelectedItem="{Binding SelectedChoice}"
                                               DisplayMemberPath="DisplayName"/>
-                                    <Button Grid.Column="2"
-                                            Content="Appliquer"
-                                            Padding="14,5"
-                                            VerticalAlignment="Center"
-                                            Click="Apply_Click"/>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Content="Appliquer"
+                                                Padding="14,5"
+                                                VerticalAlignment="Center"
+                                                Click="Apply_Click"/>
+                                        <Button Content="Masquer"
+                                                Padding="10,5"
+                                                Margin="8,0,0,0"
+                                                VerticalAlignment="Center"
+                                                ToolTip="Ne plus afficher cette carte dans la liste (elle reste configurable via le CLI)"
+                                                Click="Hide_Click"/>
+                                    </StackPanel>
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
+            <Expander x:Name="HiddenExpander"
+                      DockPanel.Dock="Bottom"
+                      Margin="0,10,0,0"
+                      Header="Cartes masquées (0)"
+                      IsExpanded="False">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="160">
+                    <ItemsControl x:Name="HiddenAdaptersList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="0,3">
+                                    <TextBlock Width="420"
+                                               VerticalAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding DisplayName}"
+                                               Text="{Binding DisplayName}"/>
+                                    <Button Content="Réafficher"
+                                            Padding="8,3"
+                                            Margin="8,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Click="Unhide_Click"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Expander>
         </DockPanel>
 
         <DockPanel Grid.Column="1">

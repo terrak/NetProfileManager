@@ -89,6 +89,13 @@ Lancer `NetProfileManager.exe` :
 
 - liste des **cartes réseau** avec leur configuration actuelle et le profil actif ;
 - pour chaque carte : choisir un profil (ou « DHCP (automatique) ») puis **Appliquer** ;
+- **masquer les cartes inutiles** (cartes virtuelles, VPN, etc.) avec le bouton
+  **Masquer** : elles disparaissent de la liste et apparaissent en bas dans la box
+  repliable **« Cartes masquées (n) »** (cliquer sur le chevron pour l'ouvrir) ;
+  le bouton **Réafficher** de cette box permet de les faire revenir en cas d'erreur.
+  Le masquage est mémorisé par utilisateur dans
+  `%AppData%\NetProfileManager\ui-settings.json` et n'a aucun effet sur la
+  configuration réseau (le CLI continue de voir toutes les cartes) ;
 - gestion des **profils** : Ajouter / Modifier / Supprimer (IP, masque, passerelle
   facultative, DNS primaire/secondaires).
 
@@ -113,5 +120,46 @@ de sortie `3` et affiche la carte concernée dans le message d'erreur.
 - Le named pipe est local à la machine ; son ACL autorise les utilisateurs standards
   à invoquer le service, rien d'autre. Aucune ouverture réseau.
 - Seul le service (SYSTEM) peut modifier la configuration IP des cartes.
+
+## Antivirus / faux positifs (ex. Trend Micro « ransomware » sur `NetProfileManager.exe`)
+
+C'est le **programme graphique** (`NetProfileManager.exe`, et idem pour le CLI) qui est
+signalé, pas le service. Or le client ne touche à **aucun fichier** et n'ouvre **aucune
+connexion réseau** : il dialogue uniquement avec le service via le named pipe local
+`NetProfileManager.Pipe`. L'alerte vient de la **réputation du binaire** : exécutable .NET
+non signé et peu distribué, donc classé « suspect » par l'heuristique générique.
+(Le service, lui, modifie bien l'IP/DNS des cartes via `netsh ... set address/dnsservers`
+sous SYSTEM — comportement légitimement surveillé, mais c'est un faux positif ici.)
+
+Pour lever l'alerte sur un poste protégé :
+
+1. **Exclusion immédiate** dans Trend Micro : exclure le dossier du client, par ex.
+   `C:\Program Files\NetProfileManager\` (ou le dossier extrait du zip) — surtout
+   `NetProfileManager.exe` et `NetProfileManager.Cli.exe` ;
+2. **Soumettre le fichier comme faux positif** à Trend Micro pour reclassification :
+   <https://helpcenter.trendlife.com/en-us/article/tmka-17854/> (échantillon :
+   <https://helpcenter.trendlife.com/en-us/article/tmka-14388/>) ;
+3. **Signer les binaires** (solution durable) — **avec le certificat interne de l'AD, c'est
+   possible et c'est la méthode standard en entreprise** :
+
+   - sur l'AD CS, publiez un modèle de certificat **« Code Signing »** (EKU
+     `1.3.6.1.5.5.7.3.3`, validité courte type 1 an) ;
+   - depuis le poste de build, demandez ce certificat (`certlm.msc` → Demander un
+     certificat) : il s'installe dans le magasin **Personnel** de la machine ;
+   - signez les binaires avant chaque release :
+
+     ```powershell
+     .\tools\Sign-Binaries.ps1 -UseCertStore -PublishDir ".\publish"
+     ```
+
+     (ou `-PfxPath "...pfx"` avec un certificat d'AC publique / Azure Trusted Signing).
+     Le script applique un horodatage RFC 3161, donc les signatures restent valides
+     après expiration du certificat.
+   - si ce n'est pas déjà le cas, déployez par GPO la **racine de l'AD CS** dans
+     « Trusted Root Certification Authorities » et le certificat éditeur dans
+     « Trusted Publishers » de tous les postes : Windows et les antivirus du domaine
+     reconnaîtront alors `NetProfileManager.exe` comme venant d'un éditeur approuvé.
+
+   Un éditeur identifié dans la signature Authenticode = réputation « bonne » auprès des antivirus.
 
 Voir `specs.md` pour l'ensemble des spécifications.
