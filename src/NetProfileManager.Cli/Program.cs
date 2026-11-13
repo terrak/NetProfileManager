@@ -1,3 +1,4 @@
+using NetProfileManager.Cli;
 using NetProfileManager.Core.Models;
 using NetProfileManager.Core.Protocol;
 
@@ -79,7 +80,7 @@ static int ListProfiles()
 
 static int SaveProfile(string[] args, bool isNew)
 {
-    var opts = Cli.OptionsParser.Parse(args);
+    var opts = OptionsParser.Parse(args);
     if (!opts.TryGetValue("name", out var name) && isNew)
     {
         Console.Error.WriteLine("--name est obligatoire pour add-profile.");
@@ -137,7 +138,7 @@ static int SaveProfile(string[] args, bool isNew)
 
 static int DeleteProfile(string[] args)
 {
-    var opts = Cli.OptionsParser.Parse(args);
+    var opts = OptionsParser.Parse(args);
     if (!opts.TryGetValue("id", out var id))
     {
         Console.Error.WriteLine("--id est obligatoire.");
@@ -151,7 +152,7 @@ static int DeleteProfile(string[] args)
 
 static int Apply(string[] args)
 {
-    var opts = Cli.OptionsParser.Parse(args);
+    var opts = OptionsParser.Parse(args);
     if (!opts.TryGetValue("adapter", out var adapter) || !opts.TryGetValue("profile", out var profileRef))
     {
         Console.Error.WriteLine("--adapter et --profile sont obligatoires.");
@@ -182,7 +183,7 @@ static int Apply(string[] args)
 
 static int SetDhcp(string[] args)
 {
-    var opts = Cli.OptionsParser.Parse(args);
+    var opts = OptionsParser.Parse(args);
     if (!opts.TryGetValue("adapter", out var adapter))
     {
         Console.Error.WriteLine("--adapter est obligatoire.");
